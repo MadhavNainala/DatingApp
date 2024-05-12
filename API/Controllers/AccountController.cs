@@ -1,22 +1,27 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using API;
+using API.Data;
 using API.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API;
+namespace API.Controllers;
 
 public class AccountController : BaseApiController
 {
     private readonly DataContext _context;
+    
+    private readonly ITokenService _tokenService;
 
-    public AccountController(DataContext context){
+    public AccountController(DataContext context, ITokenService tokenService){
 
         _context = context;
+        _tokenService = tokenService;
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<AppUser>> Register(RegisterDTO registerDTO){
+    public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO){
 
       if(await UserExists(registerDTO.Username)){
 
@@ -34,12 +39,15 @@ public class AccountController : BaseApiController
 
        _context.Users.Add(user);
        await _context.SaveChangesAsync();
-       return user;
+       return new UserDTO{
+         Username = user.UserName,
+         Token = _tokenService.CreateToken(user)
+       };
 
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AppUser>> Login(LoginDTO loginDTO){
+    public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO){
             
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDTO.Username);
 
@@ -57,7 +65,10 @@ public class AccountController : BaseApiController
               }
             }
 
-            return user;
+            return new UserDTO{
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
     }
 
     private async Task<bool> UserExists(String Username){
