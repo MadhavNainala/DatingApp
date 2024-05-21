@@ -6,4 +6,6 @@ public class UserDTO
 
   public string  Token { get; set; }
 
+  public string PhotoUrl {get; set;}
+
 }
