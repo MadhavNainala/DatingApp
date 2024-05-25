@@ -15,6 +15,8 @@ export class AppComponent {
 
   }
 
+  
+
   ngOnInit() : void{
     this.setCurrentUser();
   }

@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { Gallery, GalleryItem, GalleryModule, ImageItem } from 'ng-gallery';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 
+
+
 @Component({
   selector: 'app-member-detail',
   standalone: true,
